@@ -159,3 +159,23 @@ end do
  end do
  F=0
 end DO
+
+F=T+Vn
+ do i=1,ncount
+  do j=1,ncount
+   do k=1,ncount
+    do l=1,ncount
+    F(i,j)=F(i,j)+P(k,l)*(ge(i,k,j,l)-0.5*ge(i,l,j,k))
+    end do
+   end do
+  end do
+ end do
+E=1/1.4
+do i = 1, ncount
+  do j = 1, ncount
+    E = E + 0.5 * P(i,j) * (Hc(i,j) + F(i,j))
+  end do
+end do
+print *,"总能量(单位hartree)",E 
+
+end program
