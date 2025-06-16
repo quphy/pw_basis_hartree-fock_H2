@@ -1,14 +1,14 @@
 program hf_pw_h2
   implicit none
   integer, allocatable :: n_G(:,:)
-  integer nmax,ncount,nx,ny,nz,i,j,k,l
+  integer nmax,ncount,nx,ny,nz,i,j,k,l,o
   complex(kind=8), allocatable :: T(:,:),Vn(:,:),ge(:,:,:,:),Hc(:,:),F(:,:),work(:),C(:,:),P(:,:)
   real, allocatable :: ep(:),eps(:),rwork(:)
   real , dimension(3,2) :: R
   real , dimension(2) :: Z
-  real pi, E, celllength
+  real pi, E, celllength,minep
   complex zi
-  integer :: lwork, info
+  integer :: lwork, info,minint
  !according to your requirment to change the nmax and cellength
  nmax=2
  celllength=5
@@ -113,15 +113,22 @@ allocate(work(lwork))
 call zheev('V','U', ncount, Hc, ncount, eps, work, lwork, rwork, info)
  C=Hc
  P=0
+
+minep=100.0
+do o=1,ncount 
+    if (eps(o)<minep)then
+    minep=eps(o)
+    minint=o
+    end if
+end do
+
  do i=1,ncount
    do j=1,ncount
-    do k=1,1
-  P(i,j)=P(i,j)+2*C(i,1)*conjg(C(j,1))
+  P(i,j)=P(i,j)+2*C(i,minint)*conjg(C(j,minint))
    end do
   end do
- end do
 
-DO WHILE( abs(eps(1)-ep(1))>0.000001  )
+DO WHILE( abs(eps(minint)-ep(minint))>0.000001  )
 ep=eps
 F=T+Vn
  do i=1,ncount
@@ -136,21 +143,19 @@ F=T+Vn
 call zheev('V','U', ncount,F, ncount, eps, work, lwork, rwork, info)
  C=F
  P=0
+
+ minep=100
+do o=1,ncount 
+    if (eps(o)<minep)then
+    minep=eps(o)
+    minint=i
+     end if
+end do
+
   do i=1,ncount
    do j=1,ncount
-    do k=1,1
-  P(i,j)=P(i,j)+2*C(i,1)*conjg(C(j,1))
-   end do
+  P(i,j)=P(i,j)+2*C(i,minint)*conjg(C(j,minint))
   end do
  end do
  F=0
 end DO
-E=1/1.4
-do i = 1, ncount
-  do j = 1, ncount
-    E = E + 0.5 * P(i,j) *( Hc(i,j) + F(i,j)) 
-  end do
-end do
-print *,"成键轨道轨道能量(单位hartree)",eps(1)
-print *,"总能量(单位hartree)",E 
-end program
