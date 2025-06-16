@@ -148,7 +148,7 @@ call zheev('V','U', ncount,F, ncount, eps, work, lwork, rwork, info)
 do o=1,ncount 
     if (eps(o)<minep)then
     minep=eps(o)
-    minint=i
+    minint=o
      end if
 end do
 
