@@ -1,0 +1,1 @@
+The potential energy of a plane wave diverges on the diagonal element, but the value is the same, equal to a divergent value multiplied by the unit matrix, which has no effect on the relative value of the energy, so I just set it to 0. At the same time, I don’t define ecut directly here, but define it through nmax and cellength（cube cell）
